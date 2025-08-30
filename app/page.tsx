@@ -1,103 +1,239 @@
-import Image from "next/image";
+'use client';
+import { MapPin, Car, Wrench, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Transition } from '@headlessui/react';
 
-export default function Home() {
+// Define types for the props of the ServiceSection component
+interface ServiceSectionProps {
+  title: string;
+  items: string[];
+  icon: React.ComponentType<{ size: number | string | undefined }>;
+}
+
+// A component for the services section
+const ServiceSection = ({ title, items, icon: Icon }: ServiceSectionProps) => (
+  <div className="bg-gray-800 p-8 rounded-2xl shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+    <div className="flex items-center mb-4">
+      <div className="p-3 rounded-full bg-blue-600 text-yellow-300">
+        <Icon className="w-8 h-8" />
+      </div>
+      <h3 className="text-2xl font-bold text-white mr-4">{title}</h3>
+    </div>
+    <ul className="space-y-4 text-gray-300">
+      {items.map((item, index) => (
+        <li key={index} className="flex items-start">
+          <Wrench className="w-5 h-5 text-yellow-400 mt-1 ml-2 flex-shrink-0" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+// Define types for the props of the ContactInfo component
+interface ContactInfoProps {
+  person: string;
+  phone: string;
+  email: string;
+}
+
+// A component for displaying contact info of each person
+const ContactInfo = ({ person, phone, email }: ContactInfoProps) => (
+  <div className="bg-gray-800 p-8 rounded-2xl shadow-xl">
+    <h3 className="text-2xl font-bold text-white mb-4">
+      צור קשר עם {person}
+    </h3>
+    <p className="text-lg text-gray-300 mb-2">
+      <Phone className="inline-block w-5 h-5 text-yellow-300 ml-2" />
+      <span className="font-bold">טלפון:</span> {phone}
+    </p>
+    <p className="text-lg text-gray-300 mb-2">
+      <Mail className="inline-block w-5 h-5 text-yellow-300 ml-2" />
+      <span className="font-bold">אימייל:</span> {email}
+    </p>
+  </div>
+);
+
+// The main App component handles the routing logic and page composition
+function App() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // עדכון הגדרת ה-ref
+  const homeSectionRef = useRef<HTMLDivElement | null>(null);
+  const servicesSectionRef = useRef<HTMLDivElement | null>(null);
+  const contactSectionRef = useRef<HTMLDivElement | null>(null);
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToSection = (sectionRef: React.RefObject<HTMLDivElement | null>) => {
+    if (sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false); // Close menu after selection
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="bg-gray-900 min-h-screen font-sans" dir="rtl">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-md shadow-lg" dir="rtl">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="text-2xl font-black text-white">
+            מכון אהרון
+          </div>
+          
+          {/* Desktop Menu */}
+          <ul className="hidden md:flex space-x-6 text-lg font-medium text-gray-300" style={{ textAlign: 'right' }}>
+            <li>
+              <button onClick={() => scrollToSection(homeSectionRef)} className="hover:text-white transition-colors duration-200">
+                בית
+              </button>
+            </li>
+            <li>
+              <button onClick={() => scrollToSection(servicesSectionRef)} className="hover:text-white transition-colors duration-200">
+                שירותים
+              </button>
+            </li>
+            <li>
+              <button onClick={() => scrollToSection(contactSectionRef)} className="hover:text-white transition-colors duration-200">
+                צור קשר
+              </button>
+            </li>
+            <li>
+              <button onClick={() => scrollToSection(locationSectionRef)} className="hover:text-white mr-6 transition-colors duration-200">
+                מיקום
+              </button>
+            </li>
+          </ul>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-gray-300 focus:outline-none"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {isMobileMenuOpen ? <ChevronUp size={28} /> : <ChevronDown size={28} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        <Transition
+          show={isMobileMenuOpen}
+          enter="transition ease-out duration-300"
+          enterFrom="transform opacity-0 -translate-y-full"
+          enterTo="transform opacity-100 translate-y-0"
+          leave="transition ease-in duration-300"
+          leaveFrom="transform opacity-100 translate-y-0"
+          leaveTo="transform opacity-0 -translate-y-full"
+        >
+          <div className="md:hidden bg-gray-950/90 py-4 border-t border-gray-800">
+            <ul className="flex flex-col items-center space-y-4 text-xl" style={{ textAlign: 'right' }}>
+              <li>
+                <button onClick={() => scrollToSection(homeSectionRef)} className="block py-2 text-white hover:text-blue-500 transition-colors">
+                  בית
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection(servicesSectionRef)} className="block py-2 text-white hover:text-blue-500 transition-colors">
+                  שירותים
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection(contactSectionRef)} className="block py-2 text-white hover:text-blue-500 transition-colors">
+                  צור קשר
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection(locationSectionRef)} className="block py-2 text-white hover:text-blue-500 transition-colors">
+                  מיקום
+                </button>
+              </li>
+            </ul>
+          </div>
+        </Transition>
+      </nav>
+
+      <main className="text-white">
+        {/* Home Section */}
+        <section ref={homeSectionRef} className="relative pt-28 pb-16 md:py-48 text-center bg-gray-950 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-black opacity-70"></div>
+          <div className="relative z-10 container mx-auto px-4">
+            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
+              מכון אהרון
+            </h1>
+            <p className="mt-4 text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto">
+              מומחים לרכב, עם ידע וניסיון של שנים, המוסך שדואג לך ולרכב שלך.
+            </p>
+          </div>
+        </section>
+
+        {/* Services Section */}
+        <section ref={servicesSectionRef} className="container mx-auto px-4 py-16 md:py-24">
+          <h2 className="text-4xl font-bold text-white text-center mb-12">
+            <Car className="inline-block w-8 h-8 ml-2 text-yellow-300" />
+            השירותים שלנו
+          </h2>
+          <div className="grid md:grid-cols-2 gap-12">
+            <ServiceSection
+              title="דוד - מכונאות כללית ושירותים מיוחדים"
+              icon={Car}
+              items={[
+                "מכונאות כללית לכל סוגי המכוניות",
+                "חשמל לרכב",
+                "מזגנים",
+                "פחחות כללית",
+                "שירות טסטים מבית הלקוח",
+                "שירות אמין ואדיב",
+                "טיפול חינם פעם בחודש לחייל כפוף לתנאים של דוד",
+                "טיפול חינם לאברך פעם בחודש כפוף לתנאים של דוד"
+              ]}
+            />
+            <ServiceSection
+              title="אהרון - מעבדה מוסמכת ורכבים חשמליים"
+              icon={Wrench}
+              items={[
+                "מעבדה מוסמכת לרכב",
+                "טסט מעל שנה",
+                "שמאי תקנה 903 לאחר תאונה",
+                "הוראת משטרת ישראל תקנה 803 לאחר תאונה",
+                "כיווני פרונט / איזוני גלגלים",
+                "אישורי תקינות לרכב חשמלי עד 550 קילו וואט ותקינות סוללה ראשית",
+                "אישור ביצוע עבודות מכונאות רכב חשמלי היברידי או חשמלי מלא",
+                "בדיקות רכבים קניה ומכירה",
+                "כל המקצועות בתוקף עם אישור ממכון התקנים ומשרד התחבורה"
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section ref={contactSectionRef} className="container mx-auto px-4 py-16 md:py-24">
+          <h2 className="text-4xl font-bold text-white text-center mb-12">
+            <Phone className="inline-block w-8 h-8 ml-2 text-yellow-300" />
+            צור קשר
+          </h2>
+          <div className="grid md:grid-cols-2 gap-12">
+            <ContactInfo person="דוד" phone="053-2782920" email="davidmusach@gmail.com" />
+            <ContactInfo person="אהרון" phone="050-9876543" email="aaron@example.com" />
+          </div>
+        </section>
+
+        {/* Location Section */}
+        <section ref={locationSectionRef} className="bg-gray-950 text-center py-16 px-4 rounded-t-[50px]">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            <MapPin className="inline-block w-8 h-8 ml-2 ml-2 text-yellow-300" />
+            איך מגיעים אלינו?
+          </h2>
+          <p className="text-lg max-w-2xl mx-auto text-gray-300 mb-8">
+            לחצו על הלוגו כדי להגיע למוסך בקלות דרך Waze.
+          </p>
+          <a href="https://waze.com/ul/hsv8y9uvdv" className="inline-block p-5 bg-blue-600 rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-110">
+            <MapPin className="w-20 h-20  text-yellow-300" />
+          </a>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="py-6 text-center text-gray-500 bg-gray-950">
+        <p>&copy; 2025 מוסך דוד & אהרון. כל הזכויות שמורות.</p>
       </footer>
     </div>
   );
 }
+
+export default App;

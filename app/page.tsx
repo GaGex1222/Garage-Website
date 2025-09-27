@@ -1,299 +1,340 @@
-'use client';
-import { MapPin, Car, Wrench, Phone, Mail, Star, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { Transition } from '@headlessui/react';
-import { motion } from 'framer-motion';
+'use client'
+import React, { useRef, useEffect, useState } from 'react';
+import { Wrench, User, ListChecks, Phone, MapPin, Clock, ArrowDown } from 'lucide-react';
 
-// Define types for the props of the ContactInfo component
-interface ContactInfoProps {
-  person: string;
-  phone: string;
-  email: string;
+// הגדרת המקטעים עבור הניווט
+const SECTIONS = [
+  { id: 'hero', title: 'ראשי', icon: Wrench },
+  { id: 'about', title: 'מי אני', icon: User },
+  { id: 'services', title: 'שירותים', icon: ListChecks },
+  { id: 'contact', title: 'צור קשר', icon: Phone },
+];
+
+// הגדרת סוגי הפרופסים עבור הרכיבים
+interface NavbarProps {
+  scrollToSection: (id: string) => void;
+  activeSection: string;
 }
 
-// A component for displaying contact info of each person
-const ContactInfo = ({ person, phone, email }: ContactInfoProps) => (
-  <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl hover:bg-slate-700 transition duration-300">
-    <h3 className="text-2xl font-bold text-orange-400 mb-4">
-      צור קשר עם {person}
-    </h3>
-    <p className="text-lg text-slate-300 mb-2">
-      <Phone className="inline-block w-5 h-5 text-orange-400 ml-2" />
-      <span className="font-bold">טלפון:</span> {phone}
-    </p>
-    <p className="text-lg text-slate-300 mb-2">
-      <Mail className="inline-block w-5 h-5 text-orange-400 ml-2" />
-      <span className="font-bold">אימייל:</span> {email}
-    </p>
-  </div>
-);
+// ------------------------------------------------------------------
+// 1. רכיב סרגל הניווט (Navbar)
+// ------------------------------------------------------------------
 
-// The main App component handles the routing logic and page composition
-function App() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const homeSectionRef = useRef(null);
-  const servicesSectionRef = useRef(null);
-  const contactSectionRef = useRef(null);
-  const locationSectionRef = useRef(null);
-  const aboutSectionRef = useRef(null);
-
-  const scrollToSection = (sectionRef) => {
-    if (sectionRef.current) {
-      sectionRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMobileMenuOpen(false); // Close menu after selection
-  };
-
-  const [bgImage, setBgImage] = useState(0);
-
-  // Array of background image URLs
-  const images = [
-    "/musach1.png",
-    "/musach2.png",
-    "/musach3.png", // Add more images as needed
-  ];
-
-  // Function to switch background image every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBgImage((prev) => (prev + 1) % images.length);
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
-
-  // Data for the two mechanics
-  const mechanicsData = [
-    {
-      person: "דוד",
-      image: "/david.jpg",
-      about: "דוד, עם שנות ניסיון רבות בתחום, הוא מומחה למכונאות כללית וטיפול ברכבים מכל הסוגים.",
-      services: [
-        "מכונאות כללית לכל סוגי המכוניות",
-        "חשמל לרכב",
-        "מזגנים",
-        "פחחות כללית",
-        "שירות טסטים מבית הלקוח",
-        "שירות אמין ואדיב",
-        "טיפול חינם פעם בחודש לחייל כפוף לתנאים של דוד",
-        "טיפול חינם לאברך פעם בחודש כפוף לתנאים של דוד"
-      ],
-      contact: {
-        person: "דוד",
-        phone: "053-2782920",
-        email: "davidmusach@gmail.com"
-      }
-    },
-    {
-      person: "אהרון",
-      image: "/aharon.jpg",
-      about: "אהרון הוא טכנאי מוסמך ומומחה לבדיקות רכב, רכבים חשמליים ואישורי תקינות.",
-      services: [
-        "מעבדה מוסמכת לרכב תקנה 281ד מכון התקנים משרד התחבורה, ללא טסט מעל שנה.",
-        "תקנה 308 לאחר תאונה הוראת משטרת ישראל",
-        "שמאי תקנה 309 לאחר תאונה",
-        "כיווני פרונט / איזוני גלגלים",
-        "אישורי הגבהות גיפים וכב",
-        "אישורי תקינות לרכב חשמלי עד 550 קילו וואט ותקינות סוללה ראשית",
-        "אישור ביצוע עבודות מכונאות רכב חשמלי היברידי או חשמלי מלא",
-        "בדיקות רכבים קניה ומכירה",
-        "כל המקצועות בתוקף עם אישור ממכון התקנים ומשרד התחבורה"
-      ],
-      contact: {
-        person: "אהרון",
-        phone: "050-9876543",
-        email: "aaron@example.com"
-      }
-    }
-  ];
-
+const Navbar: React.FC<NavbarProps> = ({ scrollToSection, activeSection }) => {
   return (
-    <div className="bg-slate-950 min-h-screen font-sans" dir="rtl">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          {/* Logo instead of text */}
-          <img
-            src="/logo.jpg"
-            alt="מכון אהרון"
-            className="h-12 w-auto object-contain"
-          />
+    <nav 
+      className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-transparent"
+      dir="rtl" // יישור לימין
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        {/* לוגו / שם העסק */}
+        <div 
+          className="text-2xl font-bold text-white tracking-wider cursor-pointer transition-colors duration-300 hover:text-yellow-400"
+          onClick={() => scrollToSection('hero')}
+        >
+          מכונאות דוד
+        </div>
+        
+        {/* כפתורי ניווט */}
+        <div className="hidden md:flex space-x-4 space-x-reverse"> 
+          {SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => scrollToSection(section.id)}
+              className={`
+                flex items-center space-x-2 space-x-reverse px-4 py-2 rounded-full font-medium 
+                transition-all duration-300 
+                ${activeSection === section.id 
+                  ? 'bg-yellow-500 text-gray-900 shadow-lg shadow-yellow-500/50' 
+                  : 'text-white hover:bg-white/10 hover:text-yellow-400'
+                }
+              `}
+            >
+              <section.icon className="w-5 h-5 ml-1" />
+              <span>{section.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+};
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex space-x-6 text-lg font-medium text-slate-300" style={{ textAlign: 'right' }}>
-            <li>
-              <button onClick={() => scrollToSection(homeSectionRef)} className="hover:text-orange-400 transition-colors duration-200">
-                בית
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection(aboutSectionRef)} className="hover:text-orange-400 transition-colors duration-200">
-                אודות
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection(servicesSectionRef)} className="hover:text-orange-400 transition-colors duration-200">
-                שירותים
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection(contactSectionRef)} className="hover:text-orange-400 transition-colors duration-200">
-                צור קשר
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection(locationSectionRef)} className="hover:text-orange-400 mr-6 transition-colors duration-200">
-                מיקום
-              </button>
-            </li>
-          </ul>
+// ------------------------------------------------------------------
+// 2. רכיב המקטע הראשי (Hero)
+// ------------------------------------------------------------------
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-slate-300 focus:outline-none"
+const HeroSection: React.FC<{scrollToSection: (id: string) => void}> = ({ scrollToSection }) => {
+  return (
+    <section 
+      id="hero" 
+      className="relative h-screen flex items-center overflow-hidden"
+      dir="rtl"
+    >
+      {/* וידאו רקע חי - שימוש ב-placeholder. יש להחליף ללינק אמיתי */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
+        className="absolute z-0 w-full h-full object-cover brightness-[0.4]"
+        poster="https://placehold.co/1920x1080/000000/ffffff?text=Video+Placeholder" // תמונת פוסטר לטעינה מהירה
+      >
+        {/* יש להחליף את הלינק ללינק וידאו אמיתי ורלוונטי (כגון וידאו של מנוע עובד, צמיגים מסתובבים וכו') */}
+        <source src="/main.mp4" type="video/mp4" />
+        הדפדפן שלך אינו תומך בתג הווידאו.
+      </video>
+
+      {/* שכבת תוכן קדמית - כעת מיושרת לימין וללא רקע כהה */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-8 md:px-16">
+        <div className="text-right max-w-4xl"> {/* יישור טקסט לימין והגבלת רוחב למראה נקי */}
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-4 drop-shadow-lg">
+            מכונאות כללית דוד
+          </h1>
+          <p className="text-xl md:text-3xl text-yellow-400 font-light italic mb-10 drop-shadow-md">
+            כשאיכות פוגשת אמינות: הטיפול המקצועי לרכב שלך.
+          </p>
+          <button 
+            onClick={() => scrollToSection('services')}
+            className="bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-full text-lg hover:bg-yellow-400 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.03]"
           >
-            {isMobileMenuOpen ? <ChevronUp size={28} /> : <ChevronDown size={28} />}
+            לשירותים שלנו
           </button>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <Transition
-          show={isMobileMenuOpen}
-          enter="transition ease-out duration-300"
-          enterFrom="transform opacity-0 -translate-y-full"
-          enterTo="transform opacity-100 translate-y-0"
-          leave="transition ease-in duration-300"
-          leaveFrom="transform opacity-100 translate-y-0"
-          leaveTo="transform opacity-0 -translate-y-full"
+      {/* חץ גלילה למטה */}
+      <button 
+        onClick={() => scrollToSection('about')}
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce p-3 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300 z-10"
+        aria-label="גלול למטה"
+      >
+        <ArrowDown className="w-6 h-6" />
+      </button>
+    </section>
+  );
+};
+
+// ------------------------------------------------------------------
+// 3. רכיב המקטע "מי אני" (About)
+// ------------------------------------------------------------------
+
+const AboutSection: React.FC = () => (
+  <section 
+    id="about" 
+    className="min-h-screen py-20 flex items-center bg-gray-900 text-white p-8 md:p-16"
+    dir="rtl"
+  >
+    <div className="container mx-auto max-w-4xl flex flex-col md:flex-row items-center gap-12">
+      <div className="text-center md:text-right flex-1">
+        <h2 className="text-4xl font-bold border-b-4 border-yellow-500 pb-3 mb-6 inline-block">
+          <User className="inline-block w-8 h-8 ml-2 text-yellow-500" /> מי אני?
+        </h2>
+        <p className="text-lg leading-relaxed mb-4">
+          שמי דוד, ואני מכונאי מוסמך עם למעלה מ-15 שנות ניסיון בתחום הרכב. אנו ב'מכונאות דוד' גאים לספק שירותי מכונאות מקצועיים ואמינים לכל סוגי הרכבים – מפרטיות ועד מסחריות קלות.
+        </p>
+        <p className="text-lg leading-relaxed">
+          הדגש שלנו הוא על **שקיפות מלאה**, שימוש בחלפים איכותיים בלבד, עבודה יסודית ומחירים הוגנים. אצלנו, הרכב שלך נמצא בידיים הכי טובות, ואנחנו תמיד דואגים שתצא לדרך בבטחה ובראש שקט.
+        </p>
+      </div>
+      <div className="flex-shrink-0 w-full md:w-80 h-64 md:h-80 bg-gray-800 rounded-xl overflow-hidden shadow-2xl relative">
+        {/* תמונה / איור של דוד המכונאי - Placeholder */}
+        <div className="absolute inset-0 flex items-center justify-center bg-yellow-500/10">
+          <Wrench className="w-24 h-24 text-yellow-500 opacity-20" />
+        </div>
+        <img 
+          src="dad.jpg" 
+          alt="דוד המכונאי" 
+          className="w-full h-full object-cover opacity-80" 
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/320x320/2d3748/fff?text=דוד+המכונאי'; }}
+        />
+      </div>
+    </div>
+  </section>
+);
+
+// ------------------------------------------------------------------
+// 4. רכיב המקטע "שירותים" (Services)
+// ------------------------------------------------------------------
+
+const servicesList = [
+  { text: 'מכונאות כללית ותחזוקה לכל סוגי המכוניות (פרטיות ומסחריות קלות)', icon: Wrench },
+  { text: 'תיקוני חשמל רכב מקיפים ודיאגנוסטיקה', icon: Clock },
+  { text: 'מערכות מיזוג אוויר: תיקון, מילוי גז ותחזוקה', icon: MapPin },
+  { text: 'פחחות כללית ותיקוני מרכב', icon: ListChecks },
+  { text: 'שירות טסטים מבית הלקוח (הכנה והעברה)', icon: User },
+  { text: 'שירות אמין, אדיב, וליווי מקצועי', icon: Phone },
+  { text: '★ מבצע לחיילים: טיפול חינם פעם בחודש (כפוף לתנאים)', icon: ArrowDown },
+  { text: '★ מבצע לאברכים: טיפול חינם פעם בחודש (כפוף לתנאים)', icon: ArrowDown },
+];
+
+const ServicesSection: React.FC = () => (
+  <section id="services" className="min-h-screen py-20 flex items-center bg-gray-800 text-white p-8 md:p-16" dir="rtl">
+    <div className="container mx-auto max-w-6xl">
+      <h2 className="text-4xl font-bold text-center border-b-4 border-yellow-500 pb-3 mb-12 inline-block mx-auto">
+        <ListChecks className="inline-block w-8 h-8 ml-2 text-yellow-500" /> השירותים שאנו מספקים
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {servicesList.map((service, index) => (
+          <div 
+            key={index} 
+            // הדגשה קלה למבצעים
+            className={`
+              bg-gray-700 p-6 rounded-xl shadow-xl transition-all duration-300 transform hover:scale-[1.02] flex items-start
+              ${service.icon === ArrowDown ? 'bg-yellow-900/40 border border-yellow-500 hover:shadow-yellow-500/50' : 'hover:shadow-yellow-500/30'}
+            `}
+          >
+            <service.icon className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1 ml-4" />
+            <p className="text-lg font-medium">{service.text}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-center text-xl mt-12 text-yellow-400">
+        כל הטיפולים מתבצעים על ידי דוד, בסטנדרט המקצועי הגבוה ביותר.
+      </p>
+    </div>
+  </section>
+);
+
+// ------------------------------------------------------------------
+// 5. רכיב המקטע "צור קשר" (Contact) - עודכן
+// ------------------------------------------------------------------
+
+const ContactSection: React.FC = () => (
+  <section 
+    id="contact" 
+    className="min-h-screen py-20 flex items-center bg-gray-950 text-white p-8 md:p-16"
+    dir="rtl"
+  >
+    <div className="container mx-auto max-w-4xl text-center">
+      <h2 className="text-5xl font-extrabold text-yellow-500 mb-4">
+        צור קשר
+      </h2>
+      <p className="text-2xl font-light mb-12 text-gray-300">
+        מוזמנים ליצור קשר או לבקר אותנו במוסך לקבלת ייעוץ והצעת מחיר.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-900 p-8 rounded-2xl shadow-2xl">
+        
+        {/* 1. טלפון (Phone - Clickable) */}
+        <a 
+          href="tel:0521234567" 
+          className="flex flex-col items-center p-4 rounded-xl transition-all duration-300 hover:bg-gray-800/50 group border border-transparent hover:border-yellow-500/50"
         >
-          <div className="md:hidden bg-slate-950/90 py-4 border-t border-slate-800">
-            <ul className="flex flex-col items-center space-y-4 text-xl" style={{ textAlign: 'right' }}>
-              <li>
-                <button onClick={() => scrollToSection(homeSectionRef)} className="block py-2 text-white hover:text-orange-400 transition-colors">
-                  בית
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection(aboutSectionRef)} className="block py-2 text-white hover:text-orange-400 transition-colors">
-                  אודות
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection(servicesSectionRef)} className="block py-2 text-white hover:text-orange-400 transition-colors">
-                  שירותים
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection(contactSectionRef)} className="block py-2 text-white hover:text-orange-400 transition-colors">
-                  צור קשר
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection(locationSectionRef)} className="block py-2 text-white hover:text-orange-400 transition-colors">
-                  מיקום
-                </button>
-              </li>
-            </ul>
-          </div>
-        </Transition>
-      </nav>
+          <Phone className="w-8 h-8 text-yellow-500 mb-3 transition-transform group-hover:scale-110" />
+          <h3 className="text-xl font-semibold mb-2">טלפון</h3>
+          <span className="text-lg text-white group-hover:text-yellow-400 transition-colors">
+            053-2782920 - דוד
+          </span>
+        </a>
 
-      <main className="text-slate-100">
-        {/* Home Section */}
-        <section
-          ref={homeSectionRef}
-          className="relative pt-28 pb-16 md:py-48 text-center bg-cover bg-center bg-no-repeat overflow-hidden"
-          style={{
-            backgroundImage: `url('${images[bgImage]}')`,
-            backgroundSize: '100% auto',
-            backgroundPosition: 'center center',
-          }}
+        {/* 2. כתובת (Address - Clickable/Emphasized) - המקטע המעודכן */}
+        <a 
+          href="https://maps.google.com/?q=רחוב+המוסכים+18,+תל+אביב" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="flex flex-col items-center p-4 rounded-xl transition-all duration-300 bg-gray-800/40 hover:bg-yellow-500/20 group border-4 border-yellow-500/30 hover:border-yellow-500 shadow-lg transform hover:scale-[1.03] cursor-pointer"
         >
-          {/* Overlay for darkening the image */}
-          <div className="absolute inset-0 bg-slate-950 opacity-70"></div>
-
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-orange-400 drop-shadow-lg tracking-wide mb-4">
-              מכון אהרון
-            </h1>
-
-            <p className="text-xl md:text-3xl text-slate-200 max-w-2xl mx-auto leading-relaxed">
-              מומחים לרכב, עם ידע וניסיון של שנים – המוסך שדואג לך ולרכב שלך.
-            </p>
-          </div>
-        </section>
-
-        {/* About & Services Section */}
-        <section className="container mx-auto px-4 py-16 md:py-24" ref={aboutSectionRef}>
-          <h2 className="text-4xl font-bold text-slate-100 text-center mb-12">
-            <Star className="inline-block w-8 h-8 ml-2 text-orange-400" />
-            אודות ושירותים
-          </h2>
-          <div className="grid md:grid-cols-2 gap-12" ref={servicesSectionRef}>
-            {mechanicsData.map((mechanic, index) => (
-              <motion.div
-                key={index}
-                className="bg-slate-800 p-8 rounded-2xl shadow-2xl"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-              >
-                <div className="flex flex-col items-center">
-                  <img
-                    src={mechanic.image}
-                    alt={mechanic.person}
-                    className="w-40 h-40 rounded-full object-cover mb-4 ring-4 ring-orange-400 transition-transform duration-300 hover:scale-105"
-                  />
-                  <h3 className="text-3xl font-bold text-orange-400 mb-2">{mechanic.person}</h3>
-                  <p className="text-slate-300 text-lg mb-8">{mechanic.about}</p>
-                </div>
-                <h4 className="text-xl font-bold text-orange-400 mb-4">שירותים של {mechanic.person}</h4>
-                <ul className="space-y-2 text-slate-300 mb-8">
-                  {mechanic.services.map((item, serviceIndex) => (
-                    <li key={serviceIndex} className="flex items-start">
-                      <Wrench className="w-5 h-5 text-orange-400 ml-2 flex-shrink-0 mt-1" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section ref={contactSectionRef} className="container mx-auto px-4 py-16 md:py-24">
-          <h2 className="text-4xl font-bold text-slate-100 text-center mb-12">
-            <Phone className="inline-block w-8 h-8 ml-2 text-orange-400" />
-            צור קשר
-          </h2>
-          <div className="grid md:grid-cols-2 gap-12">
-            <ContactInfo person="דוד" phone="053-2782920" email="davidmusach@gmail.com" />
-            <ContactInfo person="אהרון" phone="050-9876543" email="aaron@example.com" />
-          </div>
-        </section>
-
-        {/* Location Section */}
-        <section ref={locationSectionRef} className="bg-slate-900 text-center py-16 px-4 rounded-t-[50px]">
-          <h2 className="text-4xl font-bold text-slate-100 mb-6">
-            <MapPin className="inline-block w-8 h-8 ml-2 text-orange-400" />
-            איך מגיעים אלינו?
-          </h2>
-          <p className="text-lg max-w-2xl mx-auto text-slate-300 mb-8">
-            לחצו על הלוגו כדי להגיע למוסך בקלות דרך Waze.
+          {/* האייקון המודגש */}
+          <MapPin className="w-8 h-8 text-yellow-500 mb-3 transition-transform group-hover:scale-110 group-hover:text-yellow-300" />
+          
+          <h3 className="text-xl font-bold mb-2 text-yellow-500">
+            כתובת (לחץ לניווט)
+          </h3>
+          
+          {/* הטקסט עם חץ המצביע על קליק */}
+          <p className="text-lg text-white font-medium flex items-center group-hover:text-yellow-100">
+            רחוב המוסכים 18, תל אביב
+            <ArrowDown 
+              className="w-5 h-5 mr-1 text-yellow-500 transform rotate-[-90deg] group-hover:rotate-0 transition-transform duration-300" 
+              aria-hidden="true" 
+            />
           </p>
-          <a href="https://waze.com/ul/hsv8y9uvdv" className="inline-block p-5 bg-orange-500 rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-110">
-            <MapPin className="w-20 h-20 text-slate-900" />
-          </a>
-        </section>
-      </main>
+        </a>
+        
+        {/* 3. שעות פתיחה (Hours - Static) */}
+        <div className="flex flex-col items-center p-4 border-gray-700 bg-gray-900/50 rounded-xl">
+          <Clock className="w-8 h-8 text-yellow-500 mb-3" />
+          <h3 className="text-xl font-semibold mb-2">שעות פתיחה</h3>
+          <p className="text-lg">א'-ה': 8:00-17:00</p>
+          <p className="text-lg">ו': 8:00-13:00</p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
-      <footer className="py-6 text-center text-slate-500 bg-slate-950">
-        <p>&copy; 2025 מוסך דוד & אהרון. כל הזכויות שמורות.</p>
-      </footer>
+// ------------------------------------------------------------------
+// 6. הרכיב הראשי (App)
+// ------------------------------------------------------------------
+
+const App: React.FC = () => {
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [activeSection, setActiveSection] = useState('hero');
+
+  // פונקציה לגלילה חלקה למקטע
+  const scrollToSection = (id: string) => {
+    const section = sectionRefs.current.find(ref => ref?.id === id);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // לוגיקה לזיהוי המקטע הפעיל עבור סרגל הניווט (Navbar)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // לוודא שהכותרת נמצאת באמצע המסך (בערך)
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5, // מזהה כאשר 50% מהמקטע נצפה
+      }
+    );
+
+    sectionRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      sectionRefs.current.forEach(ref => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
+
+  return (
+    // **שינוי כאן: החלפת 'Rubik' ל-'Heebo' (בתוספת fallback ל-sans-serif)**
+    <div className="min-h-screen bg-gray-900 text-white font-['Heebo',_sans-serif] scroll-smooth" dir="rtl">
+      {/* 7. הטמעת רכיב הניווט */}
+      <Navbar scrollToSection={scrollToSection} activeSection={activeSection} />
+
+      {/* עטיפה של כל המקטעים עם ה-ref */}
+      {[HeroSection, AboutSection, ServicesSection, ContactSection].map((SectionComponent, index) => {
+        const sectionId = SECTIONS[index].id;
+        return (
+          <div 
+            key={sectionId}
+            ref={el => sectionRefs.current[index] = el}
+            id={sectionId}
+            className="w-full"
+          >
+            {/* רקע שחור מלא כברירת מחדל, המקטעים עצמם מגדירים את הרקע */}
+            {sectionId === 'hero' ? <HeroSection scrollToSection={scrollToSection} /> : 
+              sectionId === 'about' ? <AboutSection /> : 
+              sectionId === 'services' ? <ServicesSection /> : 
+              <ContactSection />}
+          </div>
+        );
+      })}
     </div>
   );
-}
+};
 
 export default App;

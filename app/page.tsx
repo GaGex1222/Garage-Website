@@ -1,6 +1,7 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react';
 import { Wrench, User, ListChecks, Phone, MapPin, Clock, ArrowDown, ChevronLeft, Menu, X } from 'lucide-react';
+import Image from 'next/image';
 
 const SECTIONS = [
   { id: 'hero',     title: 'ראשי',    icon: Wrench },
@@ -206,15 +207,12 @@ const AboutSection: React.FC = () => (
         >
           <div className="absolute top-0 right-0 w-1.5 h-full z-10"
                style={{ background: 'var(--accent)' }} />
-          <img
-            src="dad.png"
+          <Image
+            src="/dad.png"
             alt="דוד המכונאי"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             style={{ filter: 'grayscale(20%)' }}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = 'https://placehold.co/320x400/18181E/94A3B8?text=דוד';
-            }}
           />
           <div className="absolute bottom-0 left-0 right-0 h-20"
                style={{ background: 'linear-gradient(to top, var(--bg-secondary), transparent)' }} />
@@ -506,8 +504,9 @@ const App: React.FC = () => {
       },
       { threshold: 0.4 }
     );
-    sectionRefs.current.forEach((ref) => { if (ref) observer.observe(ref); });
-    return () => sectionRefs.current.forEach((ref) => { if (ref) observer.unobserve(ref); });
+    const refs = sectionRefs.current;
+    refs.forEach((ref) => { if (ref) observer.observe(ref); });
+    return () => refs.forEach((ref) => { if (ref) observer.unobserve(ref); });
   }, []);
 
   const sectionComponents = [

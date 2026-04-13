@@ -228,7 +228,7 @@ const AboutSection: React.FC = () => (
             <span className="accent-line" />
           </div>
           <p className="text-base sm:text-lg leading-[1.9] mb-4" style={{ color: 'var(--text-secondary)' }}>
-            שמי דוד, ואני מכונאי מוסמך עם למעלה מ-15 שנות ניסיון בתחום הרכב. ב&rsquo;מכונאות דוד&rsquo; גאים לספק שירותי מכונאות מקצועיים ואמינים לכל סוגי הרכבים — מפרטיות ועד מסחריות קלות.
+            שמי דוד, ואני מכונאי מוסמך עם למעלה מ-30 שנות ניסיון בתחום הרכב. ב&rsquo;מכונאות דוד&rsquo; גאים לספק שירותי מכונאות מקצועיים ואמינים לכל סוגי הרכבים — מפרטיות ועד מסחריות קלות.
           </p>
           <p className="text-base sm:text-lg leading-[1.9]" style={{ color: 'var(--text-secondary)' }}>
             הדגש שלנו הוא על <strong className="text-white font-semibold">שקיפות מלאה</strong>, שימוש בחלפים איכותיים בלבד, עבודה יסודית ומחירים הוגנים. אצלנו, הרכב שלך נמצא בידיים הכי טובות.

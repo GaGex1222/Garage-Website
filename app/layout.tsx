@@ -10,7 +10,7 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "מכונאות דוד | מוסך מקצועי",
+  title: "דוד מכונאות כללית | מוסך מקצועי",
   description: "שירותי מכונאות מקצועיים ואמינים לכל סוגי הרכבים",
   icons: {
     icon: "/logo.jpg",
